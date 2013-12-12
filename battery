@@ -42,7 +42,7 @@ then
     $green;
     $bold;
 else
-    $yellow;
+    $green;
 fi
 upower -i $path | grep "percentage";
 
