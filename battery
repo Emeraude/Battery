@@ -1,0 +1,61 @@
+#!/bin/bash
+style='echo -en \033[0;37m';
+red='echo -en \033[31m';
+green='echo -en \033[32m';
+yellow='echo -en \033[33m';
+bold='echo -en \033[1m';
+path='/org/freedesktop/UPower/devices/battery_BAT0';
+etat=$(upower -i $path | grep "state" | awk '{ print $2 }');
+percent=$(upower -i $path | grep "percentage" | awk '{ print $2 }' | cut -d '%' -f1 | cut -d '.' -f1);
+
+# Display the battery state
+
+$style
+echo -en "Battery\n\n";
+if [ $etat == 'discharging' ]
+then
+	$red;
+elif [ $etat == 'charging' ]
+then
+	$green;
+else
+	$green;
+	$bold;
+fi
+upower -i $path | grep "state";
+
+# Display the battery percentage
+
+$style
+if [ "$percent" -lt "10" ]
+then
+    $red;
+    $bold;
+elif [ "$percent" -lt "20" ]
+then
+    $red;
+elif [ "$percent" -lt "50" ]
+then
+    $yellow;
+elif [ "$percent" -eq "100" ]
+then
+    $green;
+    $bold;
+else
+    $yellow;
+fi
+upower -i $path | grep "percentage";
+
+# Display the time remaining to full/empty
+
+$style;
+upower -i $path | grep "time";
+
+# Display the time
+
+echo "";
+date;
+
+# Remove all color
+
+echo -en "\033[0m";
