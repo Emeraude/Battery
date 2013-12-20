@@ -1,4 +1,5 @@
 #!/bin/bash
+
 style='echo -en \033[0;37m';
 red='echo -en \033[31m';
 green='echo -en \033[32m';
