@@ -1,0 +1,18 @@
+.TH BATTERY "1" "December 2013" "Battery 1.1" "User Commands"
+.SH NAME
+battery \- Display informations about battery.
+.SH SYNOPSIS
+.B battery
+.SH DESCRIPTION
+.PP
+Display informations about battery state : charging/discharging, percentage and time to full/empty, with the date.
+.SH AUTHOR
+.PP
+Written by broggi_t.
+.SH REPORTING BUGS
+.PP
+No known bug.
+Report battery bugs to broggi_t@epitech.eu
+.SH SEE ALSO
+.PP
+upower(1)
