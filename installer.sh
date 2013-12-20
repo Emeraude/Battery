@@ -16,5 +16,5 @@ then
 else
 	$red;
 	echo "You need to be root for install correctly the battery script.";
-	$std;
 fi
+$std;
