@@ -3,7 +3,7 @@ Battery_linux
 
 A script that display some informations about the battery state running on GNU/Linux.
 
-To use it, you have to run the following command :
+To install it, you have to run the following command :
 
          root ./installer.sh
 
