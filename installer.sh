@@ -17,6 +17,6 @@ then
 	rm -f installer.sh;
 else
 	$red;
-	echo "You need to be root for install correctly the battery script.";
+	echo "You need to be root to install correctly the battery script.";
 fi
 $std;
