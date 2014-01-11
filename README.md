@@ -13,5 +13,5 @@ You can call the battery command in your ~/.bashrc to run it each time you open 
 
 It runs well on Archlinux and OpenSUSE, but you can test it in the distribution you want.
 
-Battery_linux v1.2
+Battery_linux v1.1
 Developped by Emeraude.
