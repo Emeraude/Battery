@@ -7,7 +7,7 @@ std='echo -en \033[0m';
 if [ `whoami` == "root" ]
 then
 	$style;
-	echo "Putting script in /usr/bin";
+	echo "Putting script in /usr/bin...";
 	if [ "$1" = "-m" ]
 	then
 	    mv -i battery /usr/bin;
@@ -16,7 +16,7 @@ then
 	fi
 	echo "Putting the rights to execute the script...";
 	chmod 755 /usr/bin/battery;
-	echo "Putting manpage in /usr/share/man/man1";
+	echo "Putting manpage in /usr/share/man/man1...";
 	if [ "$1" == "-m" ]
 	then
 	    mv -i battery.1.gz /usr/share/man/man1;
