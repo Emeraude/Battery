@@ -1,100 +1,112 @@
 #!/bin/bash
 
+loop=0;
+display_date=1;
+short=0;
 std='echo -en \033[0m';
-style='echo -en \033[0;37m';
 red='echo -en \033[31m';
 green='echo -en \033[32m';
 yellow='echo -en \033[33m';
 bold='echo -en \033[1m';
 
-function display
-{
-    path='/org/freedesktop/UPower/devices/battery_BAT0';
-    etat=$(upower -i $path | grep "state" | awk '{ print $2 }');
-    percent=$(upower -i $path | grep "percentage" | awk '{ print $2 }' | cut -d '%' -f1 | cut -d '.' -f1);
-
-    $style
-    echo -en "Battery\n\n";
-    if [ $etat == 'discharging' ]
+state() {
+    state=$(upower -i $path | grep 'state' | awk '{ print $2 }');
+    if [ $state == 'discharging' ]
     then
 	$red;
-    elif [ $etat == 'charging' ]
-    then
-	$green;
     else
 	$green;
-	$bold;
+	[ $state != 'charging' ] && $bold;
     fi
-    upower -i $path | grep "state";
-
-    $style
-    if [ "$percent" -lt "10" ]
-    then
-	$red;
-	$bold;
-    elif [ "$percent" -lt "20" ]
-    then
-	$red;
-    elif [ "$percent" -lt "50" ]
-    then
-	$yellow;
-    elif [ "$percent" -eq "100" ]
-    then
-	$green;
-	$bold;
-    else
-	$green;
-    fi
-    upower -i $path | grep "percentage";
-
-    $style;
-    upower -i $path | grep "time";
-
-    if [ $1 -eq 1 ]
-    then
-	echo "";
-	date;
-    fi
+    [ $short == 0 ] && {
+	upower -i $path | grep 'state';
+    } || {
+	if [ $state == 'discharging' ]
+	then
+	    echo -n '-';
+	elif [ $state == 'charging' ]
+	then
+	    echo -n '+';
+	else
+	    echo -n '=';
+	fi
+    }
     $std;
 }
 
-loop=0;
-display_date=1;
+display() {
+    path='/org/freedesktop/UPower/devices/battery_BAT0';
+    percent=$(upower -i $path | grep 'percentage' | awk '{ print $2 }' | cut -d '%' -f1 | cut -d '.' -f1);
+
+    [ $short == 0 ] && {
+	echo -e 'Battery\n';
+	state;
+    }
+
+    $std
+    if [ "$percent" -lt 10 ]
+    then
+	$red;
+	$bold;
+    elif [ "$percent" -lt 20 ]
+    then
+	$red;
+    elif [ "$percent" -lt 50 ]
+    then
+	$yellow;
+    elif [ "$percent" -eq 100 ]
+    then
+	$green;
+	$bold;
+    else
+	$green;
+    fi
+
+    [ $short == 0 ] && {
+	upower -i $path | grep 'percentage'
+	$std;
+	upower -i $path | grep 'time';
+	[ $1 -eq 1 ] && {
+	    echo '';
+	    date;
+	}
+    } || {
+	echo -n $percent;
+	state;
+    }
+}
 
 for i in $*
 do
-    if [ `echo $i | cut -d '=' -f1` == "--display-date" ]
+    if [ `echo $i | cut -d '=' -f1` == '--display-date' ]
     then
 	choice=`echo $i | cut -d '=' -f2`;
-	if [ $choice == "n" ] || [ $choice == "no" ]
-	then
-	    display_date=0;
-	else
-	    display_date=1;
-	fi
-    elif [ $i == "--loop" ] || [ $i == "-l" ]
+	[ $choice == 'n' ] || [ $choice == 'no' ]
+	display_date=$?;
+    elif [ $i == '--loop' ] || [ $i == '-l' ]
     then
 	loop=1;
-    elif [ $i == "--help" ] || [ $i == "-h" ]
+    elif [ $i == '--short' ] || [ $i == '-s' ]
     then
-	echo "Usage: battery [OPTION]..."
-	echo "Display some informations about battery state."
-	echo -e "\n  --display-date=yes/no\t\tdisplay or not the date"
-	echo -e "  -h, --help\t\t\tdisplay this help"
-	echo -e "  -l, --loop\t\t\tdo an infinite loop"
-	echo -e "\nReport battery bugs to broggi_t@epitech.eu"
+	short=1;
+    else
+	cat << EOF
+Usage: battery [OPTION]...
+Display some informations about battery state.
+--display-date=yes/no		display or not the date
+-h, --help			display this help
+-l, --loop			do an infinite loop
+-s, --short			give the output in a short format
+EOF
 	exit 0
     fi
 done
 
-if [ $loop -eq 1 ]
-then
+[ $loop -eq 1 ] && {
     while [ 1 ]
     do
 	clear;
 	display $display_date;
 	sleep 1;
     done
-else
-    display $display_date;
-fi
+} || display $display_date;

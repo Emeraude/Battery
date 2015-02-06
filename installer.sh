@@ -1,12 +1,11 @@
 #!/bin/bash
 
-style='echo -en \033[0;37m';
 red='echo -en \033[31m';
 std='echo -en \033[0m';
 
-if [ `whoami` == "root" ]
+if [ "`whoami`" == "root" ]
 then
-	$style;
+	$std;
 	echo "Putting script in /usr/bin...";
 	if [ "$1" = "-m" ]
 	then
@@ -28,5 +27,5 @@ then
 else
 	$red;
 	echo "You need to be root to install correctly the battery script.";
+	$std;
 fi
-$std;
