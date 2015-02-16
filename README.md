@@ -8,5 +8,5 @@ To install it, you have to run the following command :
 sudo ./installer.sh
 ```
 
-Battery_linux v1.4  
+Battery_linux v1.5  
 Developped by Emeraude.

@@ -3,6 +3,7 @@
 loop=0;
 display_date=1;
 short=0;
+color=1;
 std='echo -en \033[0m';
 red='echo -en \033[31m';
 green='echo -en \033[32m';
@@ -11,13 +12,16 @@ bold='echo -en \033[1m';
 
 state() {
     state=$(upower -i $path | grep 'state' | awk '{ print $2 }');
-    if [ $state == 'discharging' ]
-    then
-	$red;
-    else
-	$green;
-	[ $state != 'charging' ] && $bold;
-    fi
+    [ $color == 1 ] && {
+	if [ $state == 'discharging' ]
+	then
+	    $red;
+	else
+	    $green;
+	    [ $state != 'charging' ] && $bold;
+	fi
+    }
+
     [ $short == 0 ] && {
 	upower -i $path | grep 'state';
     } || {
@@ -31,7 +35,7 @@ state() {
 	    echo -n '=';
 	fi
     }
-    $std;
+    [ $color == 1 ] && $std;
 }
 
 display() {
@@ -43,28 +47,30 @@ display() {
 	state;
     }
 
-    $std
-    if [ "$percent" -lt 10 ]
-    then
-	$red;
-	$bold;
-    elif [ "$percent" -lt 20 ]
-    then
-	$red;
-    elif [ "$percent" -lt 50 ]
-    then
-	$yellow;
-    elif [ "$percent" -eq 100 ]
-    then
-	$green;
-	$bold;
-    else
-	$green;
-    fi
+    [ $color == 1 ] && {
+	$std;
+	if [ "$percent" -lt 10 ]
+	then
+	    $red;
+	    $bold;
+	elif [ "$percent" -lt 20 ]
+	then
+	    $red;
+	elif [ "$percent" -lt 50 ]
+	then
+	    $yellow;
+	elif [ "$percent" -eq 100 ]
+	then
+	    $green;
+	    $bold;
+	else
+	    $green;
+	fi
+    }
 
     [ $short == 0 ] && {
 	upower -i $path | grep 'percentage'
-	$std;
+	[ $color == 1 ] && $std;
 	upower -i $path | grep 'time';
 	[ $1 -eq 1 ] && {
 	    echo '';
@@ -81,7 +87,7 @@ do
     if [ `echo $i | cut -d '=' -f1` == '--display-date' ]
     then
 	choice=`echo $i | cut -d '=' -f2`;
-	[ $choice == 'n' ] || [ $choice == 'no' ]
+	[ "$choice" == 'n' ] || [ "$choice" == 'no' ]
 	display_date=$?;
     elif [ $i == '--loop' ] || [ $i == '-l' ]
     then
@@ -89,13 +95,21 @@ do
     elif [ $i == '--short' ] || [ $i == '-s' ]
     then
 	short=1;
+    elif [ $i == '--nocolor' ]
+    then
+	color=0;
+    elif [ $i == '--color' ] || [ $i == '-c' ]
+    then
+	color=1;
     else
 	cat << EOF
 Usage: battery [OPTION]...
 Display some informations about battery state.
+-c, --color			enable color
 --display-date=yes/no		display or not the date
 -h, --help			display this help
 -l, --loop			do an infinite loop
+--nocolor			disable color
 -s, --short			give the output in a short format
 EOF
 	exit 0
@@ -103,7 +117,7 @@ EOF
 done
 
 [ $loop -eq 1 ] && {
-    while [ 1 ]
+    while true
     do
 	clear;
 	display $display_date;
